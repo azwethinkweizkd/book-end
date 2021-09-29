@@ -1,9 +1,14 @@
 const { User } = require("../models");
+const { AuthenticationError } = require("apollo-server-express");
+const { signToken } = require("../utils/auth");
 
 const resolvers = {
   Query: {
     me: async (parent, args, { user }) => {
-      return User.findOne({ _id: user._id });
+      if (user) {
+        return User.findOne({ _id: user._id });
+      }
+      throw new AuthenticationError("You need to be logged in!");
     },
   },
 
@@ -11,6 +16,8 @@ const resolvers = {
     addUser: async (parent, { username, email, password }) => {
       const user = await User.create({ username, email, password });
       const token = signToken(user);
+
+      console.log(user);
 
       return { token, user };
     },

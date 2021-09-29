@@ -12,7 +12,7 @@ const SignupForm = () => {
     email: "",
     password: "",
   });
-  const [addUser, { error, data }] = useMutation(ADD_USER);
+  const [addUser, { error }] = useMutation(ADD_USER);
   // set state for form validation
   const [validated] = useState(false);
   // set state for alert
@@ -30,18 +30,33 @@ const SignupForm = () => {
   // submit form
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    event.stopPropagation();
+
     console.log(userFormData);
+
+    const form = event.currentTarget;
+
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
     try {
       const { data } = await addUser({
         variables: { ...userFormData },
       });
+      console.log("Am I getting this data", data);
       console.log(data.addUser.token);
 
       Auth.login(data.addUser.token);
     } catch (e) {
       console.error(e);
+      setShowAlert(true);
     }
+    setUserFormData({
+      username: "",
+      email: "",
+      password: "",
+    });
   };
 
   return (
