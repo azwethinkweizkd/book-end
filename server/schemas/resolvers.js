@@ -10,14 +10,21 @@ const resolvers = {
       }
       throw new AuthenticationError("You need to be logged in!");
     },
+    getSingleUser: async (parent, args, { user }) => {
+      const foundUser = await User.findOne({
+        $or: [{ _id: user ? user._id : args.id }, { username: args.username }],
+      });
+
+      return foundUser;
+    },
   },
+  //please stope
 
   Mutation: {
-    addUser: async (parent, { username, email, password }) => {
-      const user = await User.create({ username, email, password });
+    addUser: async (parent, args) => {
+      console.log("line 18 mutation", args);
+      const user = await User.create(args);
       const token = signToken(user);
-
-      console.log(user);
 
       return { token, user };
     },

@@ -12,7 +12,7 @@ const SignupForm = () => {
     email: "",
     password: "",
   });
-  const [addUser, { error }] = useMutation(ADD_USER);
+  const [addUser, { error, data }] = useMutation(ADD_USER);
   // set state for form validation
   const [validated] = useState(false);
   // set state for alert
@@ -31,7 +31,7 @@ const SignupForm = () => {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    console.log(userFormData);
+    // console.log(userFormData, event);
 
     const form = event.currentTarget;
 
@@ -41,11 +41,12 @@ const SignupForm = () => {
     }
 
     try {
+      console.log("In the try block", userFormData);
       const { data } = await addUser({
         variables: { ...userFormData },
       });
       console.log("Am I getting this data", data);
-      console.log(data.addUser.token);
+      // console.log(data.addUser.token);
 
       Auth.login(data.addUser.token);
     } catch (e) {
