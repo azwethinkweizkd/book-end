@@ -10,19 +10,12 @@ const resolvers = {
       }
       throw new AuthenticationError("You need to be logged in!");
     },
-    getSingleUser: async (parent, args, { user }) => {
-      const foundUser = await User.findOne({
-        $or: [{ _id: user ? user._id : args.id }, { username: args.username }],
-      });
-
-      return foundUser;
-    },
   },
   //please stope
 
   Mutation: {
     addUser: async (parent, args) => {
-      console.log("line 18 mutation", args);
+      // console.log("line 18 mutation", args);
       const user = await User.create(args);
       const token = signToken(user);
 
@@ -46,13 +39,13 @@ const resolvers = {
     },
 
     // Add a third argument to the resolver to access data in our `context`
-    saveBook: async (parent, { userID, bookData }, context) => {
+    saveBook: async (parent, { bookData }, context) => {
       // If context has a `user` property, that means the user executing this mutation has a valid JWT and is logged in
       if (context.user) {
         return User.findOneAndUpdate(
-          { _id: userID },
+          { _id: context.user._id },
           {
-            $addToSet: { savedBooks: bookData },
+            $push: { savedBooks: bookData },
           },
           {
             new: true,
@@ -67,6 +60,7 @@ const resolvers = {
     removeBook: async (parent, { bookId }, context) => {
       if (context.user) {
         return User.findOneAndUpdate(
+          { _id: context.user._id },
           { $pull: { savedBooks: bookId } },
           { new: true }
         );
