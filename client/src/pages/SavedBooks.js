@@ -26,12 +26,12 @@ const SavedBooks = () => {
     if (!token) {
       return false;
     }
-    console.log("first console.log", bookId);
+    // console.log("first console.log", bookId);
     try {
       const { data } = await removeBook({
         variables: { bookId },
       });
-      console.log("try block", JSON.stringify(data));
+      // console.log("try block", JSON.stringify(data));
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
       window.location.reload();
